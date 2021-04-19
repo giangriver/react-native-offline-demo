@@ -8,6 +8,7 @@ import Loader from "../../components/alertLoader/alertLoader";
 import { responseSuccess } from "../../utils/dataResponse";
 import realm from '../../models/Database';
 import NetInfo from "@react-native-community/netinfo";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({ navigation }) {
   const [username, setUsername] = useState('')
@@ -23,16 +24,13 @@ export default function Login({ navigation }) {
     })
       .then((res) => {
         let obj = responseSuccess(res.data);
-        var user = {
-          token: obj.token,
-          name: obj.user_display_name,
-        };
-        save_account_if_need({ username: user.name, password: password })
+        save_account_if_need({ username: username, password: password })
         setLoading(false)
-        navigation.navigate('Home', {
-          display_name: user.name
+        AsyncStorage.setItem('@access_token', obj.token)
+        navigation.navigate('Passcode', {
+          display_name: username
         });
-        console.log('Success ', user.name);
+        console.log('Success ', username);
       })
       .catch((err) => {
         let errResponse =
@@ -75,7 +73,7 @@ export default function Login({ navigation }) {
     NetInfo.fetch().then(state => {
       console.log("Connection type", state.type);
       console.log("Is connected?", state.isConnected);
-      if(!state.isConnected){
+      if(state.isConnected){
         onLogin()
       } else {
         offline_login({ username: username, password: password })
@@ -92,7 +90,7 @@ export default function Login({ navigation }) {
       }
     })
     if(isHasAccount){
-      navigation.navigate('Home', {
+      navigation.navigate('Passcode', {
         display_name: username
       });
     } else {
