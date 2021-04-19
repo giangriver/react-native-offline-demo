@@ -1,53 +1,33 @@
 import React, { useState } from 'react'
 import { View, Text, Image, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Alert } from 'react-native'
+import {connect} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styles from './login.styles'
+import { loginRequest } from "../../actions/auth";
 import { TextInput } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import axios from 'axios';
 import Loader from "../../components/alertLoader/alertLoader";
-import { responseSuccess } from "../../utils/dataResponse";
 
-export default function Login({ navigation }) {
+export default function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const API_LOGIN = 'http://enclave.mrmai.net:8930/wp-json/jwt-auth/v1/token';
+  const authRe = useSelector((state) => state.authReducer);
+  const dispatch = useDispatch();
+  const dispatchRequest = (username, password) => dispatch(loginRequest(username, password));
+
 
   const onLogin = () => {
-    setLoading(true);
-    axios.post(API_LOGIN, {
-      username: username,
-      password: password,
-    })
-      .then((res) => {
-        let obj = responseSuccess(res.data);
-        var user = {
-          token: obj.token,
-          name: obj.user_display_name,
-        };
-        setLoading(false)
-        navigation.navigate('Home', {
-          display_name: user.name
-        });
-        console.log('Success ', user.name);
-      })
-      .catch((err) => {
-        let errResponse =
-          (err && err.response && err.response.data.message) ||
-          (err && err.message);
-        console.log('Error: ', errResponse);
-        Alert.alert('Error', errResponse, [{ text: 'OK' }]);
-        setLoading(false)
-      });
-  }
+    dispatchRequest(username, password);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAwareScrollView
         contentContainerStyle={{ backgroundColor: '#fff', flexGrow: 1 }}
         showsVerticalScrollIndicator={false}>
-        <Loader loading={loading} />
+        <Loader loading={authRe.loading} />
         <View style={styles.container}>
           <View style={styles.headerContainer}>
             <View style={styles.headerImg}>

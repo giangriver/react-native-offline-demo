@@ -32,4 +32,9 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     color: '#808080'
   },
+  textLogout: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#00b3b3'
+  },
 });
