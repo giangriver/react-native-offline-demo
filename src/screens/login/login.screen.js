@@ -7,6 +7,7 @@ import axios from 'axios';
 import Loader from "../../components/alertLoader/alertLoader";
 import { responseSuccess } from "../../utils/dataResponse";
 import realm from '../../models/Database';
+import NetInfo from "@react-native-community/netinfo";
 
 export default function Login({ navigation }) {
   const [username, setUsername] = useState('')
@@ -16,7 +17,6 @@ export default function Login({ navigation }) {
   const API_LOGIN = 'http://enclave.mrmai.net:8930/wp-json/jwt-auth/v1/token';
 
   const onLogin = () => {
-    setLoading(true);
     axios.post(API_LOGIN, {
       username: username,
       password: password,
@@ -27,7 +27,7 @@ export default function Login({ navigation }) {
           token: obj.token,
           name: obj.user_display_name,
         };
-        save_account_if_need({username:user.name, password:password})
+        save_account_if_need({ username: user.name, password: password })
         setLoading(false)
         navigation.navigate('Home', {
           display_name: user.name
@@ -48,7 +48,7 @@ export default function Login({ navigation }) {
     console.log("LOGIN SCREEN")
   })
 
-  const save_account_if_need = (account) => {
+  const save_account_if_need = account => {
     realm.write(() => {
       var isHasAccount = false
       let all_accounts = realm.objects("Account")
@@ -70,8 +70,35 @@ export default function Login({ navigation }) {
 
   }
 
-  const offline_login = () => {
+  const check_network = () => {
+    setLoading(true);
+    NetInfo.fetch().then(state => {
+      console.log("Connection type", state.type);
+      console.log("Is connected?", state.isConnected);
+      if(!state.isConnected){
+        onLogin()
+      } else {
+        offline_login({ username: username, password: password })
+      }
+    });
+  }
 
+  const offline_login = account => {
+    let all_accounts = realm.objects("Account")
+    var isHasAccount = false
+    all_accounts.map((item, index) => {
+      if(account.username == item.username && account.password == item.password){
+         isHasAccount = true
+      }
+    })
+    if(isHasAccount){
+      navigation.navigate('Home', {
+        display_name: username
+      });
+    } else {
+      Alert.alert('Alert', "Cannot login", [{ text: 'OK' }]);
+    }
+    setLoading(false)
   }
 
   const test_realm = () => {
@@ -137,7 +164,7 @@ export default function Login({ navigation }) {
                 dense={true}
               />
             </View>
-            <TouchableOpacity style={styles.btnLogin} onPress={() => onLogin()}>
+            <TouchableOpacity style={styles.btnLogin} onPress={() => check_network()}>
               <Text style={styles.txtSubmit}>LOGIN</Text>
             </TouchableOpacity>
             <View style={styles.footerContainer}>

@@ -8,6 +8,13 @@ buildscript {
         targetSdkVersion = 29
         ndkVersion = "20.1.5948944"
     }
+    // ext {
+    // buildToolsVersion = "28.0.3"
+    // minSdkVersion = 16
+    // compileSdkVersion = 28
+    // targetSdkVersion = 28
+    // androidXCore = "1.0.2"
+    // }
     repositories {
         google()
         jcenter()
