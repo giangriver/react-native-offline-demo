@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, Image, TouchableWithoutFeedback, Keyboard, TouchableOpacity, Alert } from 'react-native'
 import styles from './login.styles'
 import { TextInput } from 'react-native-paper';
@@ -6,6 +6,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import axios from 'axios';
 import Loader from "../../components/alertLoader/alertLoader";
 import { responseSuccess } from "../../utils/dataResponse";
+import realm from '../../models/Database';
 
 export default function Login({ navigation }) {
   const [username, setUsername] = useState('')
@@ -26,6 +27,7 @@ export default function Login({ navigation }) {
           token: obj.token,
           name: obj.user_display_name,
         };
+        save_account_if_need({username:user.name, password:password})
         setLoading(false)
         navigation.navigate('Home', {
           display_name: user.name
@@ -40,6 +42,49 @@ export default function Login({ navigation }) {
         Alert.alert('Error', errResponse, [{ text: 'OK' }]);
         setLoading(false)
       });
+  }
+
+  useEffect(() => {
+    console.log("LOGIN SCREEN")
+  })
+
+  const save_account_if_need = (account) => {
+    realm.write(() => {
+      var isHasAccount = false
+      let all_accounts = realm.objects("Account")
+      all_accounts.map((item, index) => {
+        if (item.username == account.username) {
+          if (item.password != account.password) {
+            item.password = account.password
+          }
+          isHasAccount = true
+        }
+      })
+      if (isHasAccount == false) {
+        realm.create('Account', {
+          username: account.username,
+          password: account.password
+        })
+      }
+    })
+
+  }
+
+  const offline_login = () => {
+
+  }
+
+  const test_realm = () => {
+    console.log("test realm")
+    let all_items = realm.objects('Account')
+    if (all_items.length == 0) {
+      console.log("No have account")
+    } else {
+      for (let i = 0; i < all_items.length; i++) {
+        let item = all_items[i]
+        console.log("item is " + item.username + " and password is " + item.password)
+      }
+    }
   }
 
   return (
@@ -61,7 +106,7 @@ export default function Login({ navigation }) {
             <View style={styles.formLogin}>
               <TextInput
                 label="Username"
-                onChangeText={text => {setUsername(text)}}
+                onChangeText={text => { setUsername(text) }}
                 mode="outlined"
                 style={[styles.inputText, { textTransform: 'lowercase' }]}
                 autoCapitalize="none"
@@ -77,7 +122,7 @@ export default function Login({ navigation }) {
               />
               <TextInput
                 label="Password"
-                onChangeText={text => {setPassword(text)}}
+                onChangeText={text => { setPassword(text) }}
                 mode="outlined"
                 style={[styles.inputText, { textTransform: 'lowercase' }]}
                 autoCapitalize="none"
@@ -97,7 +142,9 @@ export default function Login({ navigation }) {
             </TouchableOpacity>
             <View style={styles.footerContainer}>
               <TouchableOpacity
-                onPress={() => { }}>
+                onPress={() => {
+                  test_realm()
+                }}>
                 <Text style={{ color: '#686868' }}>
                   Don't have an account?{' '}
                   <Text style={{ color: '#00b3b3', fontWeight: '700' }}>
