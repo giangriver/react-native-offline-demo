@@ -13,12 +13,13 @@ import ConfirmPasscode from './src/screens/passcode/confirmpasscode.screen';
 const Stack = createStackNavigator();
 
 export default function App() {
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}>
+        screenOptions={{
+          headerShown: false,
+        }}>
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Passcode" component={Passcode} />
         <Stack.Screen name="ConfirmPasscode" component={ConfirmPasscode} />

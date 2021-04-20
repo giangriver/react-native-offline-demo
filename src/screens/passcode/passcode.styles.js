@@ -14,17 +14,24 @@ export default StyleSheet.create({
         alignSelf: 'center',
         width: w * 0.7,
         marginTop: 4,
+        fontSize:25,
     },
     title:{
         fontWeight:'bold',
-        fontSize: 30
+        fontSize: 30,
+        color: '#00b3b3',
     },
     button: {
         width: w*0.7,
         height: 40,
-        marginTop:10,
-        backgroundColor: "yellow",
+        marginTop:20,
+        backgroundColor: "#00b3b3",
         justifyContent:'center',
         alignItems:'center'
+    },
+    textButton: {
+        fontWeight:'bold',
+        color: 'white',
     }
+
 })

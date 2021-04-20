@@ -42,8 +42,13 @@ export default function Login({ navigation }) {
       });
   }
 
-  useEffect(() => {
-    console.log("LOGIN SCREEN")
+  useEffect(async () => {
+    let access_token = await AsyncStorage.getItem("@access_token")
+    console.log("Access token is " + access_token)
+    if (access_token != null) {
+      console.log("Show Passcode Screen")
+      navigation.navigate('Passcode')
+    }
   })
 
   const save_account_if_need = account => {

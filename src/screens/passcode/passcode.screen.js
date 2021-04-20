@@ -8,18 +8,29 @@ export default function Passcode({ navigation }) {
 
     const [passcode, setPasscode] = useState('')
 
-    useEffect(async () => {
-        let access_token = await AsyncStorage.getItem("@access_token")
-        console.log("Access token is " + access_token)
-    })
+    // useEffect(async () => {
+    //     let access_token = await AsyncStorage.getItem("@access_token")
+    //     console.log("Access token is " + access_token)
+    // })
 
-    const create_passcode_tapped = () => {
-        if (passcode == "") {
-            Alert.alert('ALert', "Please type passcode.", [{ text: 'OK' }]);
+    const create_passcode_tapped = async () => {
+        let previous_passcode = await AsyncStorage.getItem('@passcode')
+        if (previous_passcode == null) {
+            if (passcode == "") {
+                Alert.alert('ALert', "Please type passcode.", [{ text: 'OK' }]);
+            } else {
+                navigation.navigate("ConfirmPasscode", {
+                    passcode: passcode
+                })
+            }
         } else {
-            navigation.navigate("ConfirmPasscode", {
-                passcode: passcode
-            })
+            if(previous_passcode == passcode){
+                navigation.navigate("Home", {
+                    display_name: "offline demo"
+                })
+            } else {
+                Alert.alert('ALert', "Passcode is not right.", [{ text: 'OK' }]);
+            }
         }
     }
 
@@ -33,6 +44,7 @@ export default function Passcode({ navigation }) {
                 style={[styles.inputText, { textTransform: 'lowercase' }]}
                 autoCapitalize="none"
                 returnKeyType="next"
+                secureTextEntry={true}
                 theme={{
                     colors: {
                         primary: '#00b3b3',
@@ -45,7 +57,7 @@ export default function Passcode({ navigation }) {
             <TouchableOpacity
                 onPress={() => { create_passcode_tapped() }}
                 style={styles.button}>
-                <Text>CREATE</Text>
+                <Text style={styles.textButton}>OK</Text>
             </TouchableOpacity>
         </View>
     )

@@ -33,6 +33,7 @@ export default function ConfirmPasscode({ route, navigation }) {
                 style={[styles.inputText, { textTransform: 'lowercase' }]}
                 autoCapitalize="none"
                 returnKeyType="next"
+                secureTextEntry={true}
                 theme={{
                     colors: {
                         primary: '#00b3b3',
@@ -45,7 +46,7 @@ export default function ConfirmPasscode({ route, navigation }) {
             <TouchableOpacity
                 onPress={() => confirm_passcode_tapped()}
                 style={styles.button}>
-                <Text>CONFIRM</Text>
+                <Text style={styles.textButton}>CONFIRM</Text>
             </TouchableOpacity>
         </View>
     )

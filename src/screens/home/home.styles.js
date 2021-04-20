@@ -32,4 +32,18 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     color: '#808080'
   },
+  btnLogin: {
+    alignSelf: 'center',
+    // width: 100,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#00cccc',
+    marginTop: 20,
+    borderRadius: 5,
+  },
+  txtSubmit: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold'
+  },
 });
