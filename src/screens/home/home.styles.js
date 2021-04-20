@@ -25,12 +25,12 @@ export default StyleSheet.create({
   textHome: {
     fontSize: 25,
     fontWeight: 'bold',
-    color: '#00b3b3'
+    color: '#00b3b3',
   },
   textWelcome: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#808080'
+    color: '#808080',
   },
   btnLogin: {
     alignSelf: 'center',

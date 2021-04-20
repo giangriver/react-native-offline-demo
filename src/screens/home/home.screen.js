@@ -2,6 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
 import { View, Text, Image, BackHandler, TouchableOpacity } from 'react-native'
 import styles from "./home.styles";
+import {View, Text, Image} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import * as Navigation from '../../navigation/Navigation';
 
 
 export default function Home({ route, navigation }) {
@@ -36,16 +39,25 @@ export default function Home({ route, navigation }) {
     <View style={styles.container}>
       <View style={styles.home}>
         <View style={styles.headerImg}>
-          <Image source={require('../../assets/images/ship-icon.png')} style={styles.iconHead} />
+          <Image
+            source={require('../../assets/images/ship-icon.png')}
+            style={styles.iconHead}
+          />
         </View>
         <Text style={styles.textHome}>Home screen.</Text>
         <Text style={styles.textWelcome}>Hello {display_name}, welcome to Demo app.</Text>
+        <Text style={styles.textWelcome}>
+          Hello {display_name}, welcome to Demo app.
+        </Text>
+        <TouchableOpacity onPress={() => Navigation.navigate('ListContact')}>
+          <Text>Go to contacts</Text>
+        </TouchableOpacity>
         <TouchableOpacity 
         onPress = {() => { logout() }}
         style={styles.btnLogin}>
           <Text style={styles.txtSubmit}>LOGOUT</Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
       </View>
     </View>
-  )
+  );
 }
