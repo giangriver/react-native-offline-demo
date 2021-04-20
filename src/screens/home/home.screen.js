@@ -2,8 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
 import { View, Text, Image, BackHandler, TouchableOpacity } from 'react-native'
 import styles from "./home.styles";
-import {View, Text, Image} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import * as Navigation from '../../navigation/Navigation';
 
 
@@ -46,9 +44,6 @@ export default function Home({ route, navigation }) {
         </View>
         <Text style={styles.textHome}>Home screen.</Text>
         <Text style={styles.textWelcome}>Hello {display_name}, welcome to Demo app.</Text>
-        <Text style={styles.textWelcome}>
-          Hello {display_name}, welcome to Demo app.
-        </Text>
         <TouchableOpacity onPress={() => Navigation.navigate('ListContact')}>
           <Text>Go to contacts</Text>
         </TouchableOpacity>
