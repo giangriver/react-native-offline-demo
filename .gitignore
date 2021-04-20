@@ -4,7 +4,6 @@
 
 # Xcode
 #
-*.hprof
 build/
 *.pbxuser
 !default.pbxuser
@@ -58,3 +57,4 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+*.hprof
