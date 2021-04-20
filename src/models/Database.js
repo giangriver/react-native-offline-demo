@@ -6,7 +6,8 @@ AccountSchema = {
     name: 'Account',
     properties: {
         username: {type: 'string', default: "user"},
-        password:  'string'
+        password:  'string',
+        access_token: 'string',
     }
 };
 

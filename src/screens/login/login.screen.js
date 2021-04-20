@@ -24,7 +24,7 @@ export default function Login({ navigation }) {
     })
       .then((res) => {
         let obj = responseSuccess(res.data);
-        save_account_if_need({ username: username, password: password })
+        save_account_if_need({ username: username, password: password, access_token: obj.token })
         setLoading(false)
         AsyncStorage.setItem('@access_token', obj.token)
         navigation.navigate('Passcode', {
@@ -44,9 +44,7 @@ export default function Login({ navigation }) {
 
   useEffect(async () => {
     let access_token = await AsyncStorage.getItem("@access_token")
-    console.log("Access token is " + access_token)
     if (access_token != null) {
-      console.log("Show Passcode Screen")
       navigation.navigate('Passcode')
     }
   })
@@ -66,7 +64,8 @@ export default function Login({ navigation }) {
       if (isHasAccount == false) {
         realm.create('Account', {
           username: account.username,
-          password: account.password
+          password: account.password,
+          access_token: account.access_token,
         })
       }
     })
@@ -78,7 +77,7 @@ export default function Login({ navigation }) {
     NetInfo.fetch().then(state => {
       console.log("Connection type", state.type);
       console.log("Is connected?", state.isConnected);
-      if(state.isConnected){
+      if (state.isConnected) {
         onLogin()
       } else {
         offline_login({ username: username, password: password })
@@ -90,11 +89,12 @@ export default function Login({ navigation }) {
     let all_accounts = realm.objects("Account")
     var isHasAccount = false
     all_accounts.map((item, index) => {
-      if(account.username == item.username && account.password == item.password){
-         isHasAccount = true
+      if (account.username == item.username && account.password == item.password) {
+        AsyncStorage.setItem("@access_token", item.access_token)
+        isHasAccount = true
       }
     })
-    if(isHasAccount){
+    if (isHasAccount) {
       navigation.navigate('Passcode', {
         display_name: username
       });
