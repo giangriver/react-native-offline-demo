@@ -6,33 +6,35 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import axios from 'axios';
 import Loader from "../../components/alertLoader/alertLoader";
 import { responseSuccess } from "../../utils/dataResponse";
-import realm from '../../models/Database';
+import realm from '../../repo/Realm';
 import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {login} from '../../constants/API'
 
 export default function Login({ navigation }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const API_LOGIN = 'http://enclave.mrmai.net:8930/wp-json/jwt-auth/v1/token';
-
   const onLogin = () => {
-    axios.post(API_LOGIN, {
+    console.log(username , password, login);
+    axios.post(login, {
       username: username,
       password: password,
     })
       .then((res) => {
+        console.log(res)
         let obj = responseSuccess(res.data);
-        save_account_if_need({ username: username, password: password, access_token: obj.token })
+        save_account_if_need({ username: username, password: password, access_token: obj.responseData.token })
         setLoading(false)
-        AsyncStorage.setItem('@access_token', obj.token)
+        AsyncStorage.setItem('@access_token', obj.responseData.token)
         navigation.navigate('Passcode', {
           display_name: username
         });
         console.log('Success ', username);
       })
       .catch((err) => {
+        console.log(err)
         let errResponse =
           (err && err.response && err.response.data.message) ||
           (err && err.message);
@@ -112,7 +114,7 @@ export default function Login({ navigation }) {
     } else {
       for (let i = 0; i < all_items.length; i++) {
         let item = all_items[i]
-        console.log("item is " + item.username + " and password is " + item.password)
+        console.log("item is " + item.username + " and password is " + item.password + " token is "+ item.access_token)
       }
     }
   }

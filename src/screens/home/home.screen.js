@@ -44,6 +44,7 @@ export default function Home({ route, navigation }) {
         </View>
         <Text style={styles.textHome}>Home screen.</Text>
         <Text style={styles.textWelcome}>Hello {display_name}, welcome to Demo app.</Text>
+
         <TouchableOpacity onPress={() => Navigation.navigate('ListContact')}>
           <Text>Go to contacts</Text>
         </TouchableOpacity>
