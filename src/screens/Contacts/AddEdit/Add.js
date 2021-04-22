@@ -9,14 +9,21 @@ import {
   Keyboard,
   PermissionsAndroid,
   ToastAndroid,
+  Alert,
 } from 'react-native';
 import styles from './styles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Navigation from '../../../navigation/Navigation';
 import ImagePicker from 'react-native-image-crop-picker';
 import Modal from 'react-native-modal';
+import {add_contact, update_contact} from '../../../constants/API';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {responseSuccess, responseFailed} from '../../../utils/dataResponse';
+import Loader from '../../../components/alertLoader/alertLoader';
 
 export default function Add(props) {
+  const [isLoading, setLoading] = useState(false);
   const [contact, setContact] = useState(null);
   const [avatar, setAvatar] = useState(null);
   const [avatarUri, setAvatarUri] = useState(null);
@@ -24,22 +31,83 @@ export default function Add(props) {
   const [phone, setPhone] = useState(null);
   const [email, setEmail] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [token, setToken] = useState(null);
+
+  const getToken = async () => {
+    let access_token = await AsyncStorage.getItem('@access_token');
+    setToken(access_token);
+  };
 
   useEffect(() => {
     let params = props.route.params;
+    getToken();
     if (params != undefined && params != null) {
       let contact = params.contact;
       setContact(contact);
       console.log('Contact: ', params.contact);
-      if (contact.avatar) setAvatarUri(contact.avatar);
+      if (contact.photo) setAvatarUri(contact.photo);
       if (contact.name) setName(contact.name);
-      if (contact.phone) setPhone(contact.phone);
+      if (contact.number) setPhone(contact.number);
       if (contact.email) setEmail(contact.email);
     }
   }, []);
 
   const selectAvatar = () => {
     setModalVisible(true);
+  };
+
+  const addContact = () => {
+    let form = new FormData();
+    form.append('file', avatar);
+    form.append('name', name);
+    form.append('email', email);
+    form.append('number', phone);
+    setLoading(true);
+    console.log('Request body: ', form);
+    axios
+      .post(add_contact, form, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          token: `${token}`,
+        },
+      })
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        setLoading(false);
+        let error =
+          (err && err.response && err.response.data) || (err && err.message);
+        console.log(error.message);
+        Alert.alert('Error', error.message, [{text: 'OK'}]);
+      });
+  };
+
+  const updateContact = () => {
+    let form = new FormData();
+    form.append('file', avatar);
+    form.append('name', name);
+    form.append('email', email);
+    form.append('number', phone);
+    setLoading(true);
+    console.log('Request body: ', form);
+    axios
+      .put(update_contact + contact._id, form, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          token: `${token}`,
+        },
+      })
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        setLoading(false);
+        let error =
+          (err && err.response && err.response.data) || (err && err.message);
+        console.log(error.message);
+        Alert.alert('Error', error.message, [{text: 'OK'}]);
+      });
   };
 
   /**
@@ -59,8 +127,9 @@ export default function Add(props) {
         type: image.mime,
         name: image.path.substring(image.path.lastIndexOf('/') + 1),
       };
+      console.log('Image picker:', image);
       setAvatar(item);
-      setAvatarUri(image.uri);
+      setAvatarUri(image.path);
     });
   };
 
@@ -140,6 +209,7 @@ export default function Add(props) {
       style={styles.container}
       onPress={Keyboard.dismiss}>
       <View style={{flex: 1}}>
+        <Loader loading={isLoading} />
         <View style={styles.toolbar}>
           <Icon
             name="close"
@@ -155,11 +225,7 @@ export default function Add(props) {
             size={40}
             color="#515151"
             onPress={() => {
-              ToastAndroid.showWithGravity(
-                contact ? 'Edit Contact' : 'Save Contact',
-                ToastAndroid.SHORT,
-                ToastAndroid.CENTER,
-              );
+              contact ? updateContact() : addContact();
             }}
           />
         </View>
@@ -167,9 +233,30 @@ export default function Add(props) {
           <TouchableOpacity onPress={selectAvatar}>
             {renderAvatar()}
           </TouchableOpacity>
-          <TextInput placeholder="Name" style={styles.input} value={name} />
-          <TextInput placeholder="Phone" style={styles.input} value={phone} />
-          <TextInput placeholder="Email" style={styles.input} value={email} />
+          <TextInput
+            placeholder="Name"
+            style={styles.input}
+            value={name}
+            onChangeText={value => {
+              setName(value);
+            }}
+          />
+          <TextInput
+            placeholder="Phone"
+            style={styles.input}
+            value={phone}
+            onChangeText={value => {
+              setPhone(value);
+            }}
+          />
+          <TextInput
+            placeholder="Email"
+            style={styles.input}
+            value={email}
+            onChangeText={value => {
+              setEmail(value);
+            }}
+          />
         </View>
         <TouchableWithoutFeedback
           onPress={() => setModalVisible(!modalVisible)}>

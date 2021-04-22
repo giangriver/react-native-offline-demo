@@ -53,6 +53,7 @@ export default StyleSheet.create({
   avatar: {
     width: 70,
     height: 70,
+    borderRadius: 35,
   },
   contactName: {
     paddingHorizontal: 16,
