@@ -19,10 +19,12 @@ import {list_contact} from '../../../constants/API';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {responseSuccess, responseFailed} from '../../../utils/dataResponse';
+import {useIsFocused} from '@react-navigation/core';
 
 export default function List() {
   const [contacts, setContacts] = useState([]);
   const [isLoading, setLoading] = useState(false);
+  const isFocus = useIsFocused();
   const onGetList = token => {
     setLoading(true);
     console.log('Token: ', token);
@@ -50,7 +52,7 @@ export default function List() {
     if (access_token != null) {
       onGetList(access_token);
     }
-  }, []);
+  }, [isFocus]);
 
   const handleData = value => {
     // sort name alphabetically
@@ -109,7 +111,11 @@ export default function List() {
                       style={styles.avatar}
                       source={require('../../../assets/images/avatar_default.png')}>
                       <Image
-                        source={{uri: data.item.photo}}
+                        source={{
+                          uri:
+                            'https://maritimedemo.herokuapp.com/' +
+                            data.item.photo,
+                        }}
                         style={styles.avatar}
                       />
                     </ImageBackground>

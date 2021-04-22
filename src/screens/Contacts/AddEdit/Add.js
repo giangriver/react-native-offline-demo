@@ -9,6 +9,7 @@ import {
   Keyboard,
   PermissionsAndroid,
   Alert,
+  ImageBackground,
 } from 'react-native';
 import styles from './styles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -30,6 +31,7 @@ export default function Add(props) {
   const [name, setName] = useState(null);
   const [phone, setPhone] = useState(null);
   const [email, setEmail] = useState(null);
+  const [emailTemp, setEmailTemp] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [token, setToken] = useState(null);
 
@@ -49,6 +51,7 @@ export default function Add(props) {
       if (contact.name) setName(contact.name);
       if (contact.number) setPhone(contact.number);
       if (contact.email) setEmail(contact.email);
+      if (contact.email) setEmailTemp(contact.email);
     }
   }, []);
 
@@ -57,14 +60,12 @@ export default function Add(props) {
   };
 
   const addContact = () => {
-    const path = avatarUri.replace('file://', '');
-    console.log('Binary data: ', RNFetchBlob.wrap(path));
+    setLoading(true);
     let form = new FormData();
-    form.append('file', avatar);
+    if (avatar) form.append('file', avatar);
     form.append('name', name);
     form.append('email', email);
     form.append('number', phone);
-    setLoading(true);
     console.log('Request body: ', form);
     axios
       .post(add_contact, form, {
@@ -75,28 +76,25 @@ export default function Add(props) {
       })
       .then(res => {
         console.log(res);
+        setLoading(false);
+        Navigation.goBack();
       })
       .catch(err => {
         setLoading(false);
         let error =
           (err && err.response && err.response.data) || (err && err.message);
-        console.log(error.message);
+        console.log(err.response);
         Alert.alert('Error', error.message, [{text: 'OK'}]);
       });
   };
 
   const updateContact = () => {
-    const RNFS = require('react-native-fs');
-    RNFS.readFile(avatar.base64, 'base64').then(data => {
-      console.log(data);
-    });
-    const path = avatar.uri.replace('file://', '');
+    setLoading(true);
     let form = new FormData();
-    form.append('file', RNFetchBlob.wrap(path));
+    if (avatar) form.append('file', avatar);
     form.append('name', name);
-    form.append('email', email);
+    if (email.trim() != emailTemp.trim()) form.append('email', email);
     form.append('number', phone);
-    // setLoading(true);
     console.log('Request body: ', form);
     axios
       .put(update_contact + contact._id, form, {
@@ -107,6 +105,8 @@ export default function Add(props) {
       })
       .then(res => {
         console.log(res);
+        setLoading(false);
+        Navigation.goBack();
       })
       .catch(err => {
         setLoading(false);
@@ -202,7 +202,13 @@ export default function Add(props) {
 
   const renderAvatar = () => {
     if (avatarUri != null) {
-      return <Image source={{uri: avatarUri}} style={styles.avatar} />;
+      return (
+        <ImageBackground
+          style={styles.avatar}
+          source={require('../../../assets/images/avatar_default.png')}>
+          <Image source={{uri: avatarUri}} style={styles.avatar} />
+        </ImageBackground>
+      );
     } else {
       return (
         <Image
