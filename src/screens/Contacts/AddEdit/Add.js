@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   Keyboard,
   PermissionsAndroid,
-  ToastAndroid,
   Alert,
 } from 'react-native';
 import styles from './styles';
@@ -21,6 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {responseSuccess, responseFailed} from '../../../utils/dataResponse';
 import Loader from '../../../components/alertLoader/alertLoader';
+import RNFetchBlob from 'rn-fetch-blob';
 
 export default function Add(props) {
   const [isLoading, setLoading] = useState(false);
@@ -57,6 +57,8 @@ export default function Add(props) {
   };
 
   const addContact = () => {
+    const path = avatarUri.replace('file://', '');
+    console.log('Binary data: ', RNFetchBlob.wrap(path));
     let form = new FormData();
     form.append('file', avatar);
     form.append('name', name);
@@ -84,12 +86,17 @@ export default function Add(props) {
   };
 
   const updateContact = () => {
+    const RNFS = require('react-native-fs');
+    RNFS.readFile(avatar.base64, 'base64').then(data => {
+      console.log(data);
+    });
+    const path = avatar.uri.replace('file://', '');
     let form = new FormData();
-    form.append('file', avatar);
+    form.append('file', RNFetchBlob.wrap(path));
     form.append('name', name);
     form.append('email', email);
     form.append('number', phone);
-    setLoading(true);
+    // setLoading(true);
     console.log('Request body: ', form);
     axios
       .put(update_contact + contact._id, form, {
@@ -105,7 +112,7 @@ export default function Add(props) {
         setLoading(false);
         let error =
           (err && err.response && err.response.data) || (err && err.message);
-        console.log(error.message);
+        console.log(err.response);
         Alert.alert('Error', error.message, [{text: 'OK'}]);
       });
   };
@@ -121,11 +128,13 @@ export default function Add(props) {
       compressImageMaxWidth: 1000,
       compressImageMaxHeight: 1000,
       compressImageQuality: 0.5,
+      includeBase64: true,
     }).then(image => {
       let item = {
         uri: image.path,
         type: image.mime,
         name: image.path.substring(image.path.lastIndexOf('/') + 1),
+        base64: image.data,
       };
       console.log('Image picker:', image);
       setAvatar(item);
