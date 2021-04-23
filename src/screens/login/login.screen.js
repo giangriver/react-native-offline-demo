@@ -9,7 +9,7 @@ import { responseSuccess } from "../../utils/dataResponse";
 import realm from '../../repo/Realm';
 import NetInfo from "@react-native-community/netinfo";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {login} from '../../constants/API'
+import { login } from '../../constants/API'
 
 export default function Login({ navigation }) {
   const [username, setUsername] = useState('')
@@ -17,7 +17,7 @@ export default function Login({ navigation }) {
   const [loading, setLoading] = useState(false)
 
   const onLogin = () => {
-    console.log(username , password, login);
+    console.log(username, password, login);
     axios.post(login, {
       username: username,
       password: password,
@@ -77,14 +77,12 @@ export default function Login({ navigation }) {
   const check_network = () => {
     setLoading(true);
     NetInfo.fetch().then(state => {
-      console.log("Connection type", state.type);
-      console.log("Is connected?", state.isConnected);
       if (state.isConnected) {
         onLogin()
       } else {
         offline_login({ username: username, password: password })
       }
-    });
+    })
   }
 
   const offline_login = account => {
@@ -114,7 +112,7 @@ export default function Login({ navigation }) {
     } else {
       for (let i = 0; i < all_items.length; i++) {
         let item = all_items[i]
-        console.log("item is " + item.username + " and password is " + item.password + " token is "+ item.access_token)
+        console.log("item is " + item.username + " and password is " + item.password + " token is " + item.access_token)
       }
     }
   }

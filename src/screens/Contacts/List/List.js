@@ -22,6 +22,7 @@ import { responseSuccess, responseFailed } from '../../../utils/dataResponse';
 import { useIsFocused } from '@react-navigation/core';
 import NetInfo from "@react-native-community/netinfo";
 import realm from '../../../repo/Realm';
+import { NetworkAvailable } from "../../../network/NetworkUtil"
 
 export default function List() {
   const [contacts, setContacts] = useState([]);
@@ -51,15 +52,21 @@ export default function List() {
   };
 
   const getOfflineContacts = () => {
-    let all_contacts = realm.objects('Contacts')
-    setContacts(all_contacts)
+    let all_contacts = Array.from(realm.objects('Contact'))
+    console.log(all_contacts);
+    // console.log(Array.from(all_contacts));
+    // all_contacts.map(item => {
+    //   console.log(Array.from(realm.objects('Contact')));
+    // })
+    //setContacts(all_contacts)
+    handleData(all_contacts)
   }
 
   const saveContactsIfNeed = contacts => {
     realm.write(() => {
       let all_contacts = realm.objects("Contact")
       realm.delete(all_contacts)
-      
+
       contacts.map((item, index) => {
         realm.create('Contact', {
           _id: item._id,
@@ -82,6 +89,7 @@ export default function List() {
         if (state.isConnected) {
           onGetList(access_token)
         } else {
+          console.log("GO TO OFFLINE");
           getOfflineContacts()
         }
       })
@@ -184,21 +192,21 @@ export default function List() {
         </TouchableOpacity>
       </View>
       <View style={styles.bodyContainer}>
-        {isLoading ? (
+        {/* {isLoading ? (
           <ActivityIndicator
             size="large"
             style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
             color="#000"
           />
-        ) : (
-          <FlatList
-            contentContainerStyle={{ flexGrow: 1 }}
-            data={contacts}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => renderItemGroupAlphabet(item)}
-          />
-        )}
+        ) : ( */}
+        <FlatList
+          contentContainerStyle={{ flexGrow: 1 }}
+          data={contacts}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => renderItemGroupAlphabet(item)}
+        />
+        {/* )} */}
       </View>
     </View>
   );
