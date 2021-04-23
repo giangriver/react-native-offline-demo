@@ -5,7 +5,7 @@ import AccountSchema from './Account'
 // Declare Schema
 
 // Create realm
-let realm = new Realm({path:'UserDatabase.realm', schema: [AccountSchema, ContactSchema]});
+let realm = new Realm({schema: [AccountSchema, ContactSchema]});
 
 // Export the realm
 export default realm;
