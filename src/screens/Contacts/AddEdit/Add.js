@@ -63,10 +63,10 @@ export default function Add(props) {
   };
 
   const addContact = () => {
-    if (name && email && avatar && phone) {
+    if (name && email && phone) {
       setLoading(true);
       let form = new FormData();
-      if (avatar) form.append('file', avatar);
+      // if (avatar) form.append('file', avatar);
       form.append('name', name);
       form.append('email', email);
       form.append('number', phone);
@@ -94,8 +94,10 @@ export default function Add(props) {
               Alert.alert('Error', error.message, [{ text: 'OK' }]);
             });
         } else {
+          var date = new Date()
           realm.write(() => {
             realm.create('Contact', {
+              _id: date.getTime().toString(),
               status: "add",
               name: name,
               number: phone,
@@ -103,6 +105,7 @@ export default function Add(props) {
               photo: avatar,
             })
           })
+          console.log(date.getTime());
           setLoading(false);
           Navigation.goBack();
         }
@@ -156,7 +159,6 @@ export default function Add(props) {
         Navigation.goBack();
       }
     })
-
   };
 
   /**

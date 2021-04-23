@@ -140,7 +140,7 @@ export default function List() {
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => {
-            return item._id.toString();
+            return item.email.toString();
           }}
           renderItem={(data, rowMap) => {
             return (
