@@ -47,7 +47,8 @@ export default function Add(props) {
       let contact = params.contact;
       setContact(contact);
       console.log('Contact: ', params.contact);
-      if (contact.photo) setAvatarUri(contact.photo);
+      if (contact.photo)
+        setAvatarUri('https://maritimedemo.herokuapp.com/' + contact.photo);
       if (contact.name) setName(contact.name);
       if (contact.number) setPhone(contact.number);
       if (contact.email) setEmail(contact.email);
@@ -60,32 +61,36 @@ export default function Add(props) {
   };
 
   const addContact = () => {
-    setLoading(true);
-    let form = new FormData();
-    if (avatar) form.append('file', avatar);
-    form.append('name', name);
-    form.append('email', email);
-    form.append('number', phone);
-    console.log('Request body: ', form);
-    axios
-      .post(add_contact, form, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          token: `${token}`,
-        },
-      })
-      .then(res => {
-        console.log(res);
-        setLoading(false);
-        Navigation.goBack();
-      })
-      .catch(err => {
-        setLoading(false);
-        let error =
-          (err && err.response && err.response.data) || (err && err.message);
-        console.log(err.response);
-        Alert.alert('Error', error.message, [{text: 'OK'}]);
-      });
+    if (name && email && avatar && phone) {
+      setLoading(true);
+      let form = new FormData();
+      if (avatar) form.append('file', avatar);
+      form.append('name', name);
+      form.append('email', email);
+      form.append('number', phone);
+      console.log('Request body: ', form);
+      axios
+        .post(add_contact, form, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            token: `${token}`,
+          },
+        })
+        .then(res => {
+          console.log(res);
+          setLoading(false);
+          Navigation.goBack();
+        })
+        .catch(err => {
+          setLoading(false);
+          let error =
+            (err && err.response && err.response.data) || (err && err.message);
+          console.log(err.response);
+          Alert.alert('Error', error.message, [{text: 'OK'}]);
+        });
+    } else {
+      Alert.alert('Error', 'Please enter info before submit', [{text: 'OK'}]);
+    }
   };
 
   const updateContact = () => {
