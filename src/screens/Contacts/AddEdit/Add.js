@@ -126,7 +126,6 @@ export default function Add(props) {
     console.log('Request body: ', form);
     NetInfo.fetch().then(state => {
       if (state.isConnected) {
-        console.log("Network is " + NetworkAvailable);
         axios
           .put(update_contact + contact._id, form, {
             headers: {
