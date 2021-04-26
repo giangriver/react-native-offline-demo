@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -13,16 +13,16 @@ import {
 import styles from './styles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Contacts from './data';
-import { SwipeListView } from 'react-native-swipe-list-view';
+import {SwipeListView} from 'react-native-swipe-list-view';
 import * as Navigation from '../../../navigation/Navigation';
-import { list_contact } from '../../../constants/API';
+import {list_contact} from '../../../constants/API';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { responseSuccess, responseFailed } from '../../../utils/dataResponse';
-import { useIsFocused } from '@react-navigation/core';
-import NetInfo from "@react-native-community/netinfo";
+import {responseSuccess, responseFailed} from '../../../utils/dataResponse';
+import {useIsFocused} from '@react-navigation/core';
+import NetInfo from '@react-native-community/netinfo';
 import realm from '../../../repo/Realm';
-import { NetworkAvailable } from "../../../network/NetworkUtil"
+import {NetworkAvailable} from '../../../network/NetworkUtil';
 
 export default function List() {
   const [contacts, setContacts] = useState([]);
@@ -40,59 +40,61 @@ export default function List() {
       .then(res => {
         let data = res.data.responseData.contacts;
         console.log(data);
-        saveContactsIfNeed(data)
-        handleData(data)
+        saveContactsIfNeed(data);
+        handleData(data);
       })
       .catch(err => {
         console.log(err);
         let errResponse = responseFailed(err);
         console.log('Error: ', errResponse);
-        Alert.alert('Error', errResponse, [{ text: 'OK' }]);
+        Alert.alert('Error', errResponse, [{text: 'OK'}]);
       });
   };
 
-  const getOfflineContacts = () => {
-    let all_contacts = Array.from(realm.objects('Contact'))
+  const getOfflineContacts = async () => {
+    setLoading(true);
+    let all_contacts = await Array.from(realm.objects('Contact'));
     console.log(all_contacts);
     // console.log(Array.from(all_contacts));
     // all_contacts.map(item => {
     //   console.log(Array.from(realm.objects('Contact')));
     // })
     //setContacts(all_contacts)
-    handleData(all_contacts)
-  }
+    handleData(all_contacts);
+    setLoading(false);
+  };
 
   const saveContactsIfNeed = contacts => {
     realm.write(() => {
-      let all_contacts = realm.objects("Contact")
-      realm.delete(all_contacts)
+      let all_contacts = realm.objects('Contact');
+      realm.delete(all_contacts);
 
       contacts.map((item, index) => {
         realm.create('Contact', {
           _id: item._id,
-          status: "online",
+          status: 'online',
           name: item.name,
           number: item.number,
           email: item.email,
           photo: item.photo,
           created_date: item.created_date,
           updated_date: item.updated_date,
-        })
-      })
-    })
-  }
+        });
+      });
+    });
+  };
 
   useEffect(async () => {
     let access_token = await AsyncStorage.getItem('@access_token');
     if (access_token != null) {
       NetInfo.fetch().then(state => {
         if (state.isConnected) {
-          onGetList(access_token)
+          onGetList(access_token);
         } else {
-          console.log("GO TO OFFLINE");
-          getOfflineContacts()
+          console.log('GO TO OFFLINE');
+          getOfflineContacts();
         }
-      })
+      });
     }
   }, [isFocus]);
 
@@ -108,7 +110,7 @@ export default function List() {
       // get first letter of name of current element
       let group = e.name[0].toUpperCase();
       // if there is no property in accumulator with this letter create it
-      if (!r[group]) r[group] = { group, contacts: [e] };
+      if (!r[group]) r[group] = {group, contacts: [e]};
       // if there is push current element to children array for that letter
       else r[group].contacts.push(e);
       // return accumulator
@@ -125,12 +127,12 @@ export default function List() {
   };
 
   const editContact = contact => {
-    Navigation.navigate('AddContact', { contact: contact });
+    Navigation.navigate('AddContact', {contact: contact});
   };
 
   const renderItemGroupAlphabet = item => {
     return (
-      <View style={{ marginVertical: 10 }}>
+      <View style={{marginVertical: 10}}>
         <Text style={styles.groupName}>{item.group}</Text>
         <SwipeListView
           useFlatList={true}
@@ -184,7 +186,7 @@ export default function List() {
           style={styles.addBtn}
           onPress={() => Navigation.navigate('AddContact')}>
           <Icon name="account-plus-outline" size={32} color="#404142" />
-          <Text style={{ paddingHorizontal: 8, fontSize: 20 }}>New Contact</Text>
+          <Text style={{paddingHorizontal: 8, fontSize: 20}}>New Contact</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.myContactBtn}>
           <Text style={styles.myContactText}>MY CONTACTS</Text>
@@ -192,21 +194,21 @@ export default function List() {
         </TouchableOpacity>
       </View>
       <View style={styles.bodyContainer}>
-        {/* {isLoading ? (
+        {isLoading ? (
           <ActivityIndicator
             size="large"
-            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
             color="#000"
           />
-        ) : ( */}
-        <FlatList
-          contentContainerStyle={{ flexGrow: 1 }}
-          data={contacts}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => renderItemGroupAlphabet(item)}
-        />
-        {/* )} */}
+        ) : (
+          <FlatList
+            contentContainerStyle={{flexGrow: 1}}
+            data={contacts}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item}) => renderItemGroupAlphabet(item)}
+          />
+        )}
       </View>
     </View>
   );
