@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -16,13 +16,13 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Navigation from '../../../navigation/Navigation';
 import ImagePicker from 'react-native-image-crop-picker';
 import Modal from 'react-native-modal';
-import { add_contact, update_contact } from '../../../constants/API';
+import {add_contact, update_contact} from '../../../constants/API';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { responseSuccess, responseFailed } from '../../../utils/dataResponse';
+import {responseSuccess, responseFailed} from '../../../utils/dataResponse';
 import Loader from '../../../components/alertLoader/alertLoader';
 import RNFetchBlob from 'rn-fetch-blob';
-import NetInfo from "@react-native-community/netinfo";
+import NetInfo from '@react-native-community/netinfo';
 import realm from '../../../repo/Realm';
 
 export default function Add(props) {
@@ -89,30 +89,30 @@ export default function Add(props) {
             .catch(err => {
               setLoading(false);
               let error =
-                (err && err.response && err.response.data) || (err && err.message);
+                (err && err.response && err.response.data) ||
+                (err && err.message);
               console.log(err.response);
-              Alert.alert('Error', error.message, [{ text: 'OK' }]);
+              Alert.alert('Error', error.message, [{text: 'OK'}]);
             });
         } else {
-          var date = new Date()
+          var date = new Date();
           realm.write(() => {
             realm.create('Contact', {
               _id: date.getTime().toString(),
-              status: "add",
+              status: 'add',
               name: name,
               number: phone,
               email: email,
               photo: avatar,
-            })
-          })
+            });
+          });
           console.log(date.getTime());
           setLoading(false);
           Navigation.goBack();
         }
-      })
-
+      });
     } else {
-      Alert.alert('Error', 'Please enter info before submit', [{ text: 'OK' }]);
+      Alert.alert('Error', 'Please enter info before submit', [{text: 'OK'}]);
     }
   };
 
@@ -141,23 +141,26 @@ export default function Add(props) {
           .catch(err => {
             setLoading(false);
             let error =
-              (err && err.response && err.response.data) || (err && err.message);
+              (err && err.response && err.response.data) ||
+              (err && err.message);
             console.log(err.response);
-            Alert.alert('Error', error.message, [{ text: 'OK' }]);
+            Alert.alert('Error', error.message, [{text: 'OK'}]);
           });
       } else {
         realm.write(() => {
-          var item = realm.objects('Contact').filtered(`_id = "${contact._id}"`)[0]
-          item.status = "edit"
-          item.name = name
-          item.number = phone
-          item.email = email
-          console.log("Abc: ", item.name);
-        })
+          var item = realm
+            .objects('Contact')
+            .filtered(`_id = "${contact._id}"`)[0];
+          item.status = 'edit';
+          item.name = name;
+          item.number = phone;
+          item.email = email;
+          console.log('Abc: ', item.name);
+        });
         setLoading(false);
         Navigation.goBack();
       }
-    })
+    });
   };
 
   /**
@@ -232,7 +235,7 @@ export default function Add(props) {
           Alert.alert(
             'Notification',
             'Camera permission denied. Please check system settings.',
-            [{ text: 'OK' }],
+            [{text: 'OK'}],
           );
         }
       } else {
@@ -249,7 +252,7 @@ export default function Add(props) {
         <ImageBackground
           style={styles.avatar}
           source={require('../../../assets/images/avatar_default.png')}>
-          <Image source={{ uri: avatarUri }} style={styles.avatar} />
+          <Image source={{uri: avatarUri}} style={styles.avatar} />
         </ImageBackground>
       );
     } else {
@@ -266,7 +269,7 @@ export default function Add(props) {
     <TouchableWithoutFeedback
       style={styles.container}
       onPress={Keyboard.dismiss}>
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         <Loader loading={isLoading} />
         <View style={styles.toolbar}>
           <Icon
