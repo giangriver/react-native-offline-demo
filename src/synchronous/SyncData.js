@@ -38,7 +38,7 @@ const sync_all_contacts = token => {
     add_contacts.map(item => {
 
         let form = new FormData();
-        //if (item.photo) form.append('file', item.photo);
+        if (item.photo) form.append('file', item.photo);
         form.append('name', item.name);
         form.append('email', item.email);
         form.append('number', item.number);

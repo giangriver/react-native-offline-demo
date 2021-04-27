@@ -48,7 +48,7 @@ export default function Add(props) {
     if (params != undefined && params != null) {
       let contact = params.contact;
       setContact(contact);
-      console.log('Contact: ', params.contact);
+      console.log('Contact: ', params.contact._id);
       if (contact.photo)
         setAvatarUri('https://maritimedemo.herokuapp.com/' + contact.photo);
       if (contact.name) setName(contact.name);
@@ -97,8 +97,9 @@ export default function Add(props) {
         } else {
           var date = new Date();
           realm.write(() => {
+            let fakeId = "local"+date.getTime().toString()
             realm.create('Contact', {
-              _id: date.getTime().toString(),
+              _id: fakeId,
               status: 'add',
               name: name,
               number: phone,
@@ -151,7 +152,13 @@ export default function Add(props) {
           var item = realm
             .objects('Contact')
             .filtered(`_id = "${contact._id}"`)[0];
-          item.status = 'edit';
+
+          if(contact._id.includes("local")){
+            item.status = "add"
+          } else {
+            item.status = "edit"
+          }
+          console.log("Status of "+item.name+" is "+item.status);
           item.name = name;
           item.number = phone;
           item.email = email;

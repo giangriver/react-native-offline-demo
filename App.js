@@ -11,12 +11,14 @@ import ListContact from './src/screens/Contacts/List/List';
 import {navigationRef} from './src/navigation/Navigation';
 import NetInfo from "@react-native-community/netinfo";
 import {sync_data_if_need } from './src/synchronous/SyncData';
+import { LogBox } from 'react-native';
 
 const Stack = createStackNavigator();
 
 export default function App() {
 
   useEffect(() => {
+    LogBox.ignoreAllLogs();
     NetInfo.addEventListener(state => {
       if(state.isConnected){
         console.log("NETWORK CHANGE: HAVE")
