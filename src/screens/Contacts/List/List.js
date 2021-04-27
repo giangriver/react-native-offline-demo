@@ -39,7 +39,7 @@ export default function List() {
       })
       .then(res => {
         let data = res.data.responseData.contacts;
-        console.log(data);
+        // console.log(data);
         saveContactsIfNeed(data);
         handleData(data);
       })
